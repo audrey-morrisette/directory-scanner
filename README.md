@@ -11,5 +11,7 @@ This is a simple directory scanner written in the Go programming language. It id
 - Strings "username" and "password"
 
 ## TODO: 
-- [ ] Create Output Report
+- [x] Create output report
+- [ ] Add output options (.csv, .tsv, etc.)
 - [ ] Enable to check zipped files/more file types
+- [ ] Add more items to detect

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 var compiledRegexes = map[string][]*regexp.Regexp{
@@ -14,8 +15,10 @@ var compiledRegexes = map[string][]*regexp.Regexp{
 	"SSN":           {regexp.MustCompile("(^\\d{3}-?\\d{2}-?\\d{4}$|^XXX-XX-XXXX$)")},
 	"Word Password": {regexp.MustCompile("password")},
 	"Word Username": {regexp.MustCompile("username")},
-	//"AWS Access Key": {regexp.MustCompile("(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])"), regexp.MustCompile("(?<![A-Za-z0-9/+=])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])")},
+	//"AWS Secret Key": {regexp.MustCompile("(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])"), regexp.MustCompile("(?<![A-Za-z0-9/+=])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])")},
 }
+
+var results []string
 
 func scanFiles(path string, info os.FileInfo, err error) error {
 
@@ -28,7 +31,9 @@ func scanFiles(path string, info os.FileInfo, err error) error {
 			for key, cr := range compiledRegexes {
 				for _, r := range cr {
 					if found := r.Find([]byte(fscanner.Text())); found != nil {
-						fmt.Println(key + `: "` + string(found) + `", Line Number: ` + strconv.Itoa(lineNumber) + ", File Name: " + file.Name())
+						resultsString := key + `: "` + string(found) + `", Line Number: ` + strconv.Itoa(lineNumber) + ", File Name: " + file.Name()
+						fmt.Println(resultsString)
+						results = append(results, resultsString)
 					}
 				}
 			}
@@ -59,5 +64,19 @@ func main() {
 		return
 	}
 	Dig(os.Args[1])
+
+	// write to file
+	//currentTime := time.Now()
+	resultsFile, err := os.Create("results-" + time.Now().Format("01-02-2006") + ".txt")
+	defer resultsFile.Close()
+	if err != nil {
+		panic(err)
+	}
+	for _, result := range results {
+		_, err := resultsFile.WriteString(result + "\n")
+		if err != nil {
+			panic(err)
+		}
+	}
 
 }
