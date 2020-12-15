@@ -7,7 +7,7 @@ This is a simple directory scanner written in the Go programming language. It id
 ### Currently Detects:
 - Credit Cards
 - Social Security Numbers
-- AWS Access Keys
+- ~~AWS Access Keys~~
 - Strings "username" and "password"
 
 ## TODO: 
