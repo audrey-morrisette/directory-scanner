@@ -18,6 +18,11 @@ var compiledRegexes = map[string][]*regexp.Regexp{
 	//"AWS Secret Key": {regexp.MustCompile("(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])"), regexp.MustCompile("(?<![A-Za-z0-9/+=])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])")},
 }
 
+// CR ...
+type CR struct {
+	regexMap map[string]*regexp.Regexp
+}
+
 var results []string
 
 func scanFiles(path string, info os.FileInfo, err error) error {
@@ -31,7 +36,7 @@ func scanFiles(path string, info os.FileInfo, err error) error {
 			for key, cr := range compiledRegexes {
 				for _, r := range cr {
 					if found := r.Find([]byte(fscanner.Text())); found != nil {
-						resultsString := key + `: "` + string(found) + `", Line Number: ` + strconv.Itoa(lineNumber) + ", File Name: " + file.Name()
+						resultsString := key + `,` + string(found) + `,` + file.Name() + `,` + strconv.Itoa(lineNumber)
 						fmt.Println(resultsString)
 						results = append(results, resultsString)
 					}
@@ -67,8 +72,13 @@ func main() {
 
 	// write to file
 	//currentTime := time.Now()
-	resultsFile, err := os.Create("results-" + time.Now().Format("01-02-2006") + ".txt")
+	resultsFile, err := os.Create("results-" + time.Now().Format("01-02-2006") + ".csv")
 	defer resultsFile.Close()
+	if err != nil {
+		panic(err)
+	}
+	// writing column headers
+	_, err = resultsFile.WriteString("Type,Value,File Name,Location\n")
 	if err != nil {
 		panic(err)
 	}
