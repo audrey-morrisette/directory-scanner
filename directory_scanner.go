@@ -18,11 +18,7 @@ var compiledRegexes = map[string][]*regexp.Regexp{
 	//"AWS Secret Key": {regexp.MustCompile("(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])"), regexp.MustCompile("(?<![A-Za-z0-9/+=])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])")},
 }
 
-// CR ...
-type CR struct {
-	regexMap map[string]*regexp.Regexp
-}
-
+// will hold results from the scan
 var results []string
 
 func scanFiles(path string, info os.FileInfo, err error) error {
@@ -60,19 +56,24 @@ func Dig(path string) {
 func main() {
 	if len(os.Args) < 2 {
 		//panic("No directory provided")
-		fmt.Println("Program Use: go directory_scanner.go [directory]")
+		fmt.Println("Program Use: go directory_scanner.go [directory] [output/directory]")
 		return
 	}
 	if os.Args[1] == "help" {
-		fmt.Println("-- Program Use: go directory_scanner.go [directory]")
+		fmt.Println("-- Program Use: go directory_scanner.go [directory] [output/directory]")
 		fmt.Println("-- Use '.' as the argument for directory to scan from the current folder")
+		fmt.Println("-- If no location is provided to save the results, the results will automatically be stored in the current directory")
 		return
 	}
+
 	Dig(os.Args[1])
 
-	// write to file
-	//currentTime := time.Now()
-	resultsFile, err := os.Create("results-" + time.Now().Format("01-02-2006") + ".csv")
+	var saveDirectory string
+	if len(os.Args) == 3 {
+		saveDirectory = os.Args[2] + "\\"
+	}
+	fmt.Println(saveDirectory + "results-" + time.Now().Format("01-02-2006") + ".csv")
+	resultsFile, err := os.Create(saveDirectory + "results-" + time.Now().Format("01-02-2006") + ".csv")
 	defer resultsFile.Close()
 	if err != nil {
 		panic(err)
