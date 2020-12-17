@@ -17,3 +17,4 @@ This is a simple directory scanner written in the Go programming language. It id
 - [ ] Add output options (.csv, .tsv, etc.)
 - [ ] Enable to check zipped files/more file types
 - [ ] Add more items to detect
+- [ ] Enhance/decrease false positives
