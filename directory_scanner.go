@@ -21,6 +21,8 @@ var compiledRegexes = map[string][]*regexp.Regexp{
 // will hold results from the scan
 var results []string
 
+var progress chan int
+
 func scanFiles(path string, info os.FileInfo, err error) error {
 
 	file, _ := os.Open(path)
@@ -65,6 +67,23 @@ func main() {
 		fmt.Println("-- If no location is provided to save the results, the results will automatically be stored in the current directory")
 		return
 	}
+
+	numFiles := 0
+	// get the number of files that will be scanned
+	err := filepath.Walk(os.Args[1], func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			numFiles++
+		}
+		return nil
+	})
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("---------------------------------------------------------------------")
+	fmt.Println("Number of files:\t", numFiles)
+	fmt.Println("---------------------------------------------------------------------")
+
 	startTime := time.Now()
 	fmt.Println("---------------------------------------------------------------------")
 	fmt.Println("Scan begun at: ", startTime)
