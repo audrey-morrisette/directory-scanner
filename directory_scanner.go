@@ -66,7 +66,9 @@ func main() {
 		return
 	}
 	startTime := time.Now()
+	fmt.Println("---------------------------------------------------------------------")
 	fmt.Println("Scan begun at: ", startTime)
+	fmt.Println("---------------------------------------------------------------------")
 	Dig(os.Args[1])
 
 	var saveDirectory string
@@ -90,8 +92,11 @@ func main() {
 			panic(err)
 		}
 	}
-
+	fmt.Println("---------------------------------------------------------------------")
+	fmt.Println("|                            Summary                                |")
+	fmt.Println("---------------------------------------------------------------------")
 	finishTime := time.Now()
-	fmt.Println("Scan completed in: ", finishTime.Sub(startTime))
-
+	fmt.Println("Scan completed in:\t", finishTime.Sub(startTime))
+	fmt.Println("Number of Findings:\t", len(results))
+	fmt.Println("---------------------------------------------------------------------")
 }
