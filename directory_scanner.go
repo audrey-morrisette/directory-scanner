@@ -72,7 +72,7 @@ func main() {
 	if len(os.Args) == 3 {
 		saveDirectory = os.Args[2] + "\\"
 	}
-	fmt.Println(saveDirectory + "results-" + time.Now().Format("01-02-2006") + ".csv")
+
 	resultsFile, err := os.Create(saveDirectory + "results-" + time.Now().Format("01-02-2006") + ".csv")
 	defer resultsFile.Close()
 	if err != nil {
