@@ -65,7 +65,8 @@ func main() {
 		fmt.Println("-- If no location is provided to save the results, the results will automatically be stored in the current directory")
 		return
 	}
-
+	startTime := time.Now()
+	fmt.Println("Scan begun at: ", startTime)
 	Dig(os.Args[1])
 
 	var saveDirectory string
@@ -89,5 +90,8 @@ func main() {
 			panic(err)
 		}
 	}
+
+	finishTime := time.Now()
+	fmt.Println("Scan completed in: ", finishTime.Sub(startTime))
 
 }
