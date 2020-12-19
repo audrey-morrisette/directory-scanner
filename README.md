@@ -19,3 +19,6 @@ This is a simple directory scanner written in the Go programming language. It id
 - [ ] Enable to check zipped files/more file types
 - [ ] Add more items to detect
 - [ ] Enhance/decrease false positives
+
+## Known Bugs:
+- Can break during exceptionally large (100GB+) scans
