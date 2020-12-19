@@ -13,6 +13,7 @@ This is a simple directory scanner written in the Go programming language. It id
 ## TODO: 
 - [x] Create output report
 - [x] Add ability to choose location to save report
+- [x] Add progress bar
 - [ ] Add improved console output
 - [ ] Add output options (.csv, .tsv, etc.)
 - [ ] Enable to check zipped files/more file types

@@ -21,7 +21,7 @@ var compiledRegexes = map[string][]*regexp.Regexp{
 // will hold results from the scan
 var results []string
 
-var progress chan int
+var progress chan int = make(chan int)
 
 func scanFiles(path string, info os.FileInfo, err error) error {
 
@@ -35,13 +35,14 @@ func scanFiles(path string, info os.FileInfo, err error) error {
 				for _, r := range cr {
 					if found := r.Find([]byte(fscanner.Text())); found != nil {
 						resultsString := key + `,` + string(found) + `,` + file.Name() + `,` + strconv.Itoa(lineNumber)
-						fmt.Println(resultsString)
+						//fmt.Println(resultsString)
 						results = append(results, resultsString)
 					}
 				}
 			}
 			lineNumber++
 		}
+		progress <- 1
 	}
 
 	return nil
@@ -53,6 +54,7 @@ func Dig(path string) {
 	if err != nil {
 		panic(err)
 	}
+	close(progress)
 }
 
 func main() {
@@ -69,10 +71,12 @@ func main() {
 	}
 
 	numFiles := 0
+	var size int64
 	// get the number of files that will be scanned
 	err := filepath.Walk(os.Args[1], func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			numFiles++
+			size += info.Size()
 		}
 		return nil
 	})
@@ -81,14 +85,41 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("---------------------------------------------------------------------")
-	fmt.Println("Number of files:\t", numFiles)
-	fmt.Println("---------------------------------------------------------------------")
+	fmt.Printf("Number of files: %d\n", numFiles)
+	if size/1e9 > 0 {
+		fmt.Printf("Size: %dGB\n", size/1e9)
+	} else if size/1e6 > 0 {
+		fmt.Printf("Size: %dMB\n", size/1e6)
+	} else if size/1e3 > 0 {
+		fmt.Printf("Size: %dKB\n", size/1e3)
+	} else {
+		fmt.Printf("Size: %d Bytes\n", size)
+	}
 
 	startTime := time.Now()
 	fmt.Println("---------------------------------------------------------------------")
 	fmt.Println("Scan begun at: ", startTime)
 	fmt.Println("---------------------------------------------------------------------")
-	Dig(os.Args[1])
+	go Dig(os.Args[1])
+
+	var delta float64 = 59 / float64(numFiles)
+	//fmt.Println(delta)
+	fmt.Print("Progress: ")
+	temp := 0
+	temp2 := 0
+	for i := 0.0; i < 59; {
+		if t := <-progress; t == 1 {
+			//fmt.Print("=")
+			i += delta
+			temp2 = temp
+			temp = int(i)
+			if temp > temp2 {
+				fmt.Print("=")
+			}
+
+		}
+	}
+	fmt.Println()
 
 	var saveDirectory string
 	if len(os.Args) == 3 {
