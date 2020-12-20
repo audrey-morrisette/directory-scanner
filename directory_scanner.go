@@ -15,6 +15,7 @@ var compiledRegexes = map[string][]*regexp.Regexp{
 	"SSN":           {regexp.MustCompile("(^\\d{3}-?\\d{2}-?\\d{4}$|^XXX-XX-XXXX$)")},
 	"Word Password": {regexp.MustCompile("password")},
 	"Word Username": {regexp.MustCompile("username")},
+	"Email":         {regexp.MustCompile("^[\\w\\.=-]+@[\\w\\.-]+\\.[\\w]{2,3}$")},
 	//"AWS Secret Key": {regexp.MustCompile("(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])"), regexp.MustCompile("(?<![A-Za-z0-9/+=])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])")},
 }
 
@@ -36,12 +37,12 @@ func scanFiles(path string, info os.FileInfo, err error) error {
 					if found := r.Find([]byte(fscanner.Text())); found != nil {
 						resultsString := key + `,` + string(found) + `,` + file.Name() + `,` + strconv.Itoa(lineNumber)
 						results = append(results, resultsString)
+						progress <- 1
 					}
 				}
 			}
 			lineNumber++
 		}
-		progress <- 1
 	}
 
 	return nil
