@@ -35,7 +35,6 @@ func scanFiles(path string, info os.FileInfo, err error) error {
 				for _, r := range cr {
 					if found := r.Find([]byte(fscanner.Text())); found != nil {
 						resultsString := key + `,` + string(found) + `,` + file.Name() + `,` + strconv.Itoa(lineNumber)
-						//fmt.Println(resultsString)
 						results = append(results, resultsString)
 					}
 				}
@@ -58,8 +57,8 @@ func Dig(path string) {
 }
 
 func main() {
+
 	if len(os.Args) < 2 {
-		//panic("No directory provided")
 		fmt.Println("Program Use: go directory_scanner.go [directory] [output/directory]")
 		return
 	}
@@ -103,13 +102,11 @@ func main() {
 	go Dig(os.Args[1])
 
 	var delta float64 = 59 / float64(numFiles)
-	//fmt.Println(delta)
 	fmt.Print("Progress: ")
 	temp := 0
 	temp2 := 0
 	for i := 0.0; i < 59; {
 		if t := <-progress; t == 1 {
-			//fmt.Print("=")
 			i += delta
 			temp2 = temp
 			temp = int(i)
