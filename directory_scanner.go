@@ -101,13 +101,14 @@ func main() {
 	fmt.Println("---------------------------------------------------------------------")
 	go Dig(os.Args[1])
 
-	var delta float64 = 59 / float64(numFiles)
+	// excuse the magic number - it's the length of the progress bar
+	var delta float64 = 60 / float64(numFiles)
 	fmt.Print("Progress: ")
 	temp := 0
 	temp2 := 0
-	for i := 0.0; i < 59; {
+	for i := 0.0; i < 60; {
 		if t := <-progress; t == 1 {
-			i += delta
+
 			temp2 = temp
 			temp = int(i)
 			if temp > temp2 {
@@ -115,6 +116,7 @@ func main() {
 			}
 
 		}
+		i += delta
 	}
 	fmt.Println()
 
