@@ -21,4 +21,5 @@ This is a simple directory scanner written in the Go programming language. It id
 - [ ] Enhance/decrease false positives
 
 ## Known Bugs:
-- Can break during exceptionally large (100GB+) scans
+- ~~Can break during exceptionally large (100GB+) scans~~ Fixed
+- ~~Progress bar inaccuracies~~ Fixed

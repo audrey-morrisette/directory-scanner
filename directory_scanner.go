@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -37,12 +38,13 @@ func scanFiles(path string, info os.FileInfo, err error) error {
 					if found := r.Find([]byte(fscanner.Text())); found != nil {
 						resultsString := key + `,` + string(found) + `,` + file.Name() + `,` + strconv.Itoa(lineNumber)
 						results = append(results, resultsString)
-						progress <- 1
+
 					}
 				}
 			}
 			lineNumber++
 		}
+		progress <- 1
 	}
 
 	return nil
@@ -54,6 +56,7 @@ func Dig(path string) {
 	if err != nil {
 		panic(err)
 	}
+	progress <- 2
 	close(progress)
 }
 
@@ -103,21 +106,23 @@ func main() {
 	go Dig(os.Args[1])
 
 	// excuse the magic number - it's the length of the progress bar
-	var delta float64 = 60 / float64(numFiles)
-	fmt.Print("Progress: ")
-	temp := 0
-	temp2 := 0
-	for i := 0.0; i < 60; {
+	const pLength float64 = 69.0
+	var delta float64 = pLength / float64(numFiles)
+
+	i := 0.0
+	progressBar := ""
+	for {
+		fmt.Printf("\r%s", progressBar)
 		if t := <-progress; t == 1 {
-
-			temp2 = temp
-			temp = int(i)
-			if temp > temp2 {
-				fmt.Print("=")
+			i += delta
+			if i < pLength {
+				progressBar = strings.Repeat("=", int(i))
+			} else {
+				progressBar = strings.Repeat("=", int(pLength))
 			}
-
+		} else {
+			break
 		}
-		i += delta
 	}
 	fmt.Println()
 
